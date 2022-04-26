@@ -38,13 +38,13 @@ func register(request *ghttp.Request) {
 	c.Writer = w
 	c.Conn = &hj
 	c.ClientId = request.Session.MustId()
-	w.WriteString("HTTP/1.1 200 OK\n")
-	w.WriteString("Connection: keep-alive\n")
+	w.WriteString("HTTP/1.1 200 OK\r\n")
+	w.WriteString("Connection: keep-alive\r\n")
 	w.WriteString(utils.CorsHeader(request.Header.Get("Origin")))
 	for k, v := range headers {
 		w.WriteString(fmt.Sprintf("%s: %s\n", k, v))
 	}
-	w.WriteString("\n")
+	w.WriteString("\r\n")
 	w.Flush()
 }
 
