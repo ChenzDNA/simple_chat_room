@@ -1,0 +1,16 @@
+[server]
+address = ":8080"
+keepAlive = true
+idleTimeout = "1h"
+
+indexFiles = ["index.html"]
+serverRoot = "./www"
+
+cookiePath = "/"
+cookieMaxAge = "90d"
+
+sessionMaxAge = "24h"
+sessionCookieOutput = true
+sessionIdName = "gfsessionid"
+
+dumpRouterMap = false
