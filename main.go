@@ -5,7 +5,6 @@ import (
 	"github.com/gogf/gf/v2/os/gsession"
 	_ "simple_chat_room/controller"
 	"simple_chat_room/middleware"
-	_ "simple_chat_room/middleware"
 )
 
 func main() {
