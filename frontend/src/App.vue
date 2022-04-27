@@ -3,6 +3,7 @@
     <template #default>
       <n-message-provider>
         <h3 class="title">几把聊天</h3>
+        <a class="a-git" href="https://github.com/ChenzDNA/simple_chat_room">Github</a>
         <MainView/>
       </n-message-provider>
     </template>
@@ -24,5 +25,12 @@ export default defineComponent({
 <style scoped>
 .title {
   text-align: center;
+}
+
+.a-git {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  color: dodgerblue;
 }
 </style>
