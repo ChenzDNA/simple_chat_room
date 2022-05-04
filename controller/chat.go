@@ -31,14 +31,15 @@ func send(request *ghttp.Request) {
 }
 
 func register(request *ghttp.Request) {
-	c, _ := utils.ClientMap.Load(request.Session.MustId())
-	if c == nil {
+	client, _ := utils.ClientMap.Load(request.Session.MustId())
+	if client == nil {
 		request.Response.WriteExit("fail")
 	}
 	hj, w, _ := request.Response.Hijack()
-	c.(*utils.Client).Writer = w
-	c.(*utils.Client).Conn = &hj
-	c.(*utils.Client).ClientId = request.Session.MustId()
+	c := client.(*utils.Client)
+	c.Writer = w
+	c.Conn = &hj
+	c.ClientId = request.Session.MustId()
 	w.WriteString("HTTP/1.1 200 OK\r\n")
 	w.WriteString("Connection: keep-alive\r\n")
 	w.WriteString(utils.CorsHeader(request.Header.Get("Origin")))
@@ -55,8 +56,9 @@ func quit(request *ghttp.Request) {
 	if !ok {
 		return
 	}
-	client.(*utils.Client).Writer.WriteString(utils.EndChunked())
-	client.(*utils.Client).Writer.Flush()
-	(*client.(*utils.Client).Conn).Close()
+	c := client.(*utils.Client)
+	c.Writer.WriteString(utils.EndChunked())
+	c.Writer.Flush()
+	(*c.Conn).Close()
 	utils.ClientMap.Delete(id)
 }
