@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"net"
+	"sync"
 )
 
 type Client struct {
@@ -11,8 +12,4 @@ type Client struct {
 	Conn     *net.Conn
 }
 
-var ClientMap map[string]*Client
-
-func init() {
-	ClientMap = make(map[string]*Client)
-}
+var ClientMap sync.Map

@@ -19,7 +19,7 @@ func genUser(request *ghttp.Request) {
 		request.Session.Set("id", id)
 	}
 	request.Session.Close()
-	utils.ClientMap[id] = &utils.Client{ClientId: id}
+	utils.ClientMap.Store(id, &utils.Client{ClientId: id})
 	request.Response.WriteJsonExit(utils.OK("ok", id))
 }
 

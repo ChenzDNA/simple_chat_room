@@ -22,22 +22,23 @@ func init() {
 
 func send(request *ghttp.Request) {
 	msg := request.Get("msg").String()
-	for _, v := range utils.ClientMap {
-		w := *v.Writer
+	utils.ClientMap.Range(func(key, value any) bool {
+		w := value.(*utils.Client).Writer
 		w.WriteString(utils.OKChunked(request.Session.MustId(), msg))
 		w.Flush()
-	}
+		return true
+	})
 }
 
 func register(request *ghttp.Request) {
-	c := utils.ClientMap[request.Session.MustId()]
+	c, _ := utils.ClientMap.Load(request.Session.MustId())
 	if c == nil {
 		request.Response.WriteExit("fail")
 	}
 	hj, w, _ := request.Response.Hijack()
-	c.Writer = w
-	c.Conn = &hj
-	c.ClientId = request.Session.MustId()
+	c.(*utils.Client).Writer = w
+	c.(*utils.Client).Conn = &hj
+	c.(*utils.Client).ClientId = request.Session.MustId()
 	w.WriteString("HTTP/1.1 200 OK\r\n")
 	w.WriteString("Connection: keep-alive\r\n")
 	w.WriteString(utils.CorsHeader(request.Header.Get("Origin")))
@@ -50,12 +51,12 @@ func register(request *ghttp.Request) {
 
 func quit(request *ghttp.Request) {
 	id := request.Session.MustId()
-	client := utils.ClientMap[id]
-	if client == nil {
+	client, ok := utils.ClientMap.Load(id)
+	if !ok {
 		return
 	}
-	client.Writer.WriteString(utils.EndChunked())
-	client.Writer.Flush()
-	(*client.Conn).Close()
-	delete(utils.ClientMap, id)
+	client.(*utils.Client).Writer.WriteString(utils.EndChunked())
+	client.(*utils.Client).Writer.Flush()
+	(*client.(*utils.Client).Conn).Close()
+	utils.ClientMap.Delete(id)
 }
