@@ -8,7 +8,6 @@ export default function (config: AxiosRequestConfig, callback: XHRCallback = nul
   request.withCredentials = true
   request.onreadystatechange = () => {
     if (request.readyState === 3) {
-      // console.log('ready state:', request.readyState)
       callback && callback(request.response)
     }
   }

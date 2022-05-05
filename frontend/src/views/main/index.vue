@@ -21,28 +21,41 @@ export default defineComponent({
       this.inputStr && requests({ url: '/chat/send', method: 'post', data: { msg: this.inputStr } })
       this.inputStr = ''
     },
-    async quit() {
+    async quit(): Promise<any> {
       await requests({ url: '/chat/quit', method: 'post' })
       this.createMessage(messageType.success, '退出成功')
+    },
+    chunkedReq(callback) {
+      chunked({ url: '/chat/register', method: 'get' }, callback)
     },
     createMessage(type: string, content: string) {
       this.messageHandler[type](content, { duration: 1000 })
     },
+  },
+  mounted() {
+    let callback = async (res: string) => {
+      let data = JSON.parse(res.split('####_split_me_####').pop());
+      this.messageList.push({ msg: data.msg, isMe: data.userId === this.userId })
+      console.log('length:', res.length)
+      if (res.length > 4 * 1024 * 1024) {
+        await this.quit()
+        await requests({ url: '/user/getid', method: 'post' })
+        this.chunkedReq(callback)
+      }
+    }
+    this.chunkedReq(callback)
   },
   async setup() {
     const messageHandler = useMessage()
     const inputStr = ref('')
     const messageList = reactive([])
     let userId: string = (await requests({ url: '/user/getid', method: 'post' })).data
-    chunked({ url: '/chat/register', method: 'get' }, (res) => {
-      let data = JSON.parse(res.split('####_split_me_####').pop());
-      messageList.push({ msg: data.msg, isMe: data.userId === userId })
-    })
 
     return {
       messageHandler,
       inputStr,
       messageList,
+      userId,
     }
   },
 })
