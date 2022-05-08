@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/glog"
 	"simple_chat_room/utils"
 )
 
@@ -13,6 +15,7 @@ var headers = map[string]string{
 }
 
 func init() {
+	glog.Info(context.TODO(), "init controller chat")
 	s := g.Server()
 	group := s.Group("/chat")
 	group.POST("/send", send)

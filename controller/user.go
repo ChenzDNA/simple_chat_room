@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/glog"
 	"simple_chat_room/utils"
 )
 
 func init() {
+	glog.Info(context.TODO(), "init controller user")
 	group := g.Server().Group("/user")
 	group.POST("/getid", genUser)
 	group.POST("/hearbeat", heartBeat)
